@@ -18,18 +18,28 @@ if (cluster.isPrimary) {
 
   startBalancer(PORT, numCPUs);
 
+  const forkWorker = (portOffset: number) => {
+    const port = PORT + 1 + portOffset;
+    const worker = cluster.fork({ PORT: `${port}` });
+    workerPorts.set(worker.id, port);
+  };
+
   for (let i = 0; i < numCPUs; i++) {
-    const worker = cluster.fork({ PORT: `${PORT + 1 + i}` });
-    workerPorts.set(worker.id, PORT + 1 + i);
+    forkWorker(i);
   }
 
   cluster.on('exit', (worker) => {
-    const currentPort = workerPorts.get(worker.id);
+    const oldPort = workerPorts.get(worker.id);
     console.warn(
-      `Worker ${worker.process.pid} exited. Restarting on port ${currentPort}...`,
+      `Worker ${worker.process.pid} exited. Restarting on port ${oldPort}...`,
     );
 
-    cluster.fork({ PORT: currentPort });
+    workerPorts.delete(worker.id);
+
+    if (oldPort !== undefined) {
+      const offset = oldPort - PORT - 1;
+      forkWorker(offset);
+    }
   });
 } else {
   const port = parseInt(process.env.PORT || '4001', 10);
