@@ -1,4 +1,4 @@
-import { handleError } from '@/utils/error-handler';
+import { handleError } from '../utils/error-handler';
 import http, { RequestOptions } from 'http';
 
 export const startBalancer = (basePort: number, workerCount: number) => {

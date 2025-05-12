@@ -7,8 +7,8 @@ import {
   deleteUserService,
   updateUserService,
 } from '../services/user.service';
-import { handleError } from '@/utils/error-handler';
-import { sendEmpty, sendJson } from '@/utils/response-handler';
+import { handleError } from '../utils/error-handler';
+import { sendEmpty, sendJson } from '../utils/response-handler';
 
 export const getUsers = (_req: IncomingMessage, res: ServerResponse) => {
   const users = getAllUsersService();

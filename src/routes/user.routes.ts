@@ -6,7 +6,7 @@ import {
   updateUser,
   deleteUser,
 } from '../controllers/user.controller';
-import { handleError } from '@/utils/error-handler';
+import { handleError } from '../utils/error-handler';
 
 export const userRouter = (req: IncomingMessage, res: ServerResponse) => {
   const urlParts = req.url?.split('/');

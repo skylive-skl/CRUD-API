@@ -1,6 +1,6 @@
 import http from 'http';
-import { userRouter } from '@/routes/user.routes';
-import { handleError } from '@/utils/error-handler';
+import { userRouter } from '../routes/user.routes';
+import { handleError } from '../utils/error-handler';
 import { config } from 'dotenv';
 
 config();
