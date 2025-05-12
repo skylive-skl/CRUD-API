@@ -1,4 +1,11 @@
 import { IncomingMessage, ServerResponse } from 'http';
+import {
+  getUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+} from '../controllers/user.controller';
 
 export const userRouter = (req: IncomingMessage, res: ServerResponse) => {
   const urlParts = req.url?.split('/');
@@ -7,11 +14,11 @@ export const userRouter = (req: IncomingMessage, res: ServerResponse) => {
   if (urlParts?.[1] === 'api' && urlParts[2] === 'users') {
     const id = urlParts[3];
 
-    if (method === 'GET' && !id) return res.end('Get all users');
-    if (method === 'GET' && id) return res.end(`Get user with id: ${id}`);
-    if (method === 'POST') return res.end('Create user');
-    if (method === 'PUT' && id) return res.end(`Update user with id: ${id}`);
-    if (method === 'DELETE' && id) return res.end(`Delete user with id: ${id}`);
+    if (method === 'GET' && !id) return getUsers(req, res);
+    if (method === 'GET' && id) return getUserById(req, res, id);
+    if (method === 'POST') return createUser(req, res);
+    if (method === 'PUT' && id) return updateUser(req, res, id);
+    if (method === 'DELETE' && id) return deleteUser(req, res, id);
   }
 
   res.writeHead(404);
