@@ -3,10 +3,11 @@ import os from 'os';
 import { startBalancer } from './cluster/balancer';
 import { createWorkerServer } from './cluster/worker';
 import { config } from 'dotenv';
+import { DEFAULT_PORT } from './constants';
 
 config();
 
-const PORT = parseInt(process.env.PORT || '4000', 10);
+const PORT = parseInt(process.env.PORT || `${DEFAULT_PORT}`, 10);
 const numCPUs = os.availableParallelism
   ? os.availableParallelism() - 1
   : os.cpus().length - 1;
