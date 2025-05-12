@@ -11,6 +11,14 @@ export const createWorkerServer = (port: number) => {
       console.log(
         `Worker handling request: ${req.method} ${req.url} on port ${port}`,
       );
+
+      if (req.url === '/kill') {
+        console.log(process.env.PORT);
+        process.exit(process.env.PORT);
+      } else {
+        console.log(process.pid);
+      }
+
       userRouter(req, res);
     } catch (err) {
       handleError(res);
