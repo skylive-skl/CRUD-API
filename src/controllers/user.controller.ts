@@ -7,11 +7,12 @@ import {
   deleteUserService,
   updateUserService,
 } from '../services/user.service';
+import { handleError } from '@/utils/error-handler';
+import { sendEmpty, sendJson } from '@/utils/response-handler';
 
 export const getUsers = (_req: IncomingMessage, res: ServerResponse) => {
   const users = getAllUsersService();
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(users));
+  sendJson(res, 200, users);
 };
 
 export const getUserById = (
@@ -20,18 +21,15 @@ export const getUserById = (
   id: string,
 ) => {
   if (!isValidUUID(id)) {
-    res.writeHead(400);
-    return res.end(JSON.stringify({ message: 'Invalid UUID' }));
+    return handleError(res, 400, 'Invalid UUID');
   }
 
   const user = getUserService(id);
   if (!user) {
-    res.writeHead(404);
-    return res.end(JSON.stringify({ message: 'User not found' }));
+    return handleError(res, 404, 'User not found');
   }
 
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(user));
+  sendJson(res, 200, user);
 };
 
 export const createUser = (req: IncomingMessage, res: ServerResponse) => {
@@ -41,16 +39,13 @@ export const createUser = (req: IncomingMessage, res: ServerResponse) => {
     try {
       const { username, age, hobbies } = JSON.parse(body);
       if (!username || typeof age !== 'number' || !Array.isArray(hobbies)) {
-        res.writeHead(400);
-        return res.end(JSON.stringify({ message: 'Invalid user data' }));
+        return handleError(res, 400, 'Invalid user data');
       }
 
       const newUser = createUserService(username, age, hobbies);
-      res.writeHead(201, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(newUser));
+      sendJson(res, 201, newUser);
     } catch (err) {
-      res.writeHead(500);
-      res.end(JSON.stringify({ message: 'Server error' }));
+      handleError(res, 500, 'Server error');
     }
   });
 };
@@ -61,8 +56,7 @@ export const updateUser = (
   id: string,
 ) => {
   if (!isValidUUID(id)) {
-    res.writeHead(400);
-    return res.end(JSON.stringify({ message: 'Invalid UUID' }));
+    return handleError(res, 400, 'Invalid UUID');
   }
 
   let body = '';
@@ -71,16 +65,16 @@ export const updateUser = (
     try {
       const { username, age, hobbies } = JSON.parse(body);
       if (!username || typeof age !== 'number' || !Array.isArray(hobbies)) {
-        res.writeHead(400);
-        return res.end(JSON.stringify({ message: 'Invalid user data' }));
+        return handleError(res, 400, 'Invalid user data');
       }
 
       const updatedUser = updateUserService(id, username, age, hobbies);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(updatedUser));
+      if (!updatedUser) {
+        return handleError(res, 404, 'User not found');
+      }
+      sendJson(res, 200, updatedUser);
     } catch (err) {
-      res.writeHead(500);
-      res.end(JSON.stringify({ message: 'Server error' }));
+      handleError(res, 500, 'Server error');
     }
   });
 };
@@ -91,16 +85,12 @@ export const deleteUser = (
   id: string,
 ) => {
   if (!isValidUUID(id)) {
-    res.writeHead(400);
-    return res.end(JSON.stringify({ message: 'Invalid UUID' }));
+    return handleError(res, 400, 'Invalid UUID');
   }
 
   const deletedUser = deleteUserService(id);
   if (!deletedUser) {
-    res.writeHead(404);
-    return res.end(JSON.stringify({ message: 'User not found' }));
+    return handleError(res, 404, 'User not found');
   }
-
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(deletedUser));
+  sendEmpty(res);
 };

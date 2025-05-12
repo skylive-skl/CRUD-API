@@ -6,6 +6,7 @@ import {
   updateUser,
   deleteUser,
 } from '../controllers/user.controller';
+import { handleError } from '@/utils/error-handler';
 
 export const userRouter = (req: IncomingMessage, res: ServerResponse) => {
   const urlParts = req.url?.split('/');
@@ -20,7 +21,5 @@ export const userRouter = (req: IncomingMessage, res: ServerResponse) => {
     if (method === 'PUT' && id) return updateUser(req, res, id);
     if (method === 'DELETE' && id) return deleteUser(req, res, id);
   }
-
-  res.writeHead(404);
-  res.end(JSON.stringify({ message: 'Route not found' }));
+  handleError(res, 404, 'Not Found');
 };

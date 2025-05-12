@@ -3,12 +3,17 @@ import { config } from 'dotenv';
 import { DEFAULT_PORT } from './constants';
 
 import { userRouter } from './routes/user.routes';
+import { handleError } from './utils/error-handler';
 
 config();
 
 const PORT = process.env.PORT || DEFAULT_PORT;
 const server = createServer((req, res) => {
-  userRouter(req, res);
+  try {
+    userRouter(req, res);
+  } catch (error) {
+    handleError(res);
+  }
   // if (req.method === 'GET' && req.url === '/') {
   //   res.writeHead(200, { 'Content-Type': 'text/plain' });
   //   res.end('Hello, World!');
